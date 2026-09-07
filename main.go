@@ -2,44 +2,32 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html")
-		fmt.Fprint(w, `
-		<body style="font-family:Poppins, sans-serif; text-align:center; padding:40px; background:#f0f9ff">
-			<h1 style="color:#0284c7; font-size:40px;">Goingo</h1>
-			<p style="color:#0ea5e9; letter-spacing:4px;">We Clean, You Shine</p>
-			<h2>🚗 Your Car Wash API is LIVE!</h2>
-			<a href="/book" style="display:inline-block; margin-top:20px; padding:15px 30px; background:#0284c7; color:white; text-decoration:none; border-radius:10px;">Go to Booking Page</a>
-			<p style="margin-top:30px;">API URL: /book , /health</p>
-		</body>
-		`)
+		http.Redirect(w, r, "/book", 302)
 	})
-
+	http.HandleFunc("/logo", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "goingo.jpeg")
+	})
 	http.HandleFunc("/book", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		fmt.Fprint(w, `
-		<body style="font-family:Poppins; text-align:center; padding:50px; background:#f0f9ff">
-			<h1 style="color:#0ea5e9">Goingo - We Clean, You Shine ✨</h1>
-			<h2>Book Your Car Wash Now</h2>
-			<div style="background:white; padding:20px; border-radius:15px; max-width:400px; margin:20px auto; box-shadow:0 4px 10px rgba(0,0,0,0.1)">
-				<p>✅ Basic Wash - ₹199</p>
-				<p>✨ Premium Shine - ₹399</p>
-				<p>💎 Full Detailing - ₹799</p>
-				<button style="padding:15px 30px; background:#0284c7; color:white; border:none; border-radius:10px; font-size:18px; margin-top:10px">Book Now</button>
-			</div>
-		</body>
-		`)
+		<html><head><title>GoinGo</title><meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>body{font-family:Arial;text-align:center;background:#e0f2fe;padding:20px}
+		.card{background:white;max-width:380px;margin:20px auto;padding:25px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.15)}
+		img{width:140px;border-radius:20px} h1{color:#0284c7} input,select,button{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc} button{background:#0284c7;color:white;font-weight:bold;border:none;cursor:pointer}</style>
+		</head><body>
+		<div class="card"><img src="/logo"><h1>GoinGo</h1><p>We Clean, You Shine ✨</p>
+		<form action="/confirm" method="POST"><input name="name" placeholder="Your Name" required><input name="phone" placeholder="Phone" required>
+		<select name="service"><option>Car Wash</option><option>Bike Wash</option><option>Full Detailing</option></select>
+		<button>Book Now</button></form></div></body></html>`)
 	})
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	fmt.Println("Running on http://localhost:" + port)
-	http.ListenAndServe(":"+port, nil)
+	http.HandleFunc("/confirm", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `<h1 style="text-align:center;margin-top:100px;color:#0284c7">✅ Booking Confirmed! GoinGo is coming! 🚗💦</h1><center><a href="/book">Go Back</a></center>`)
+	})
+	log.Fatal(http.ListenAndServe(":10000", nil))
 }
