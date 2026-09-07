@@ -11,7 +11,7 @@ func main() {
 		http.Redirect(w, r, "/book", 302)
 	})
 	http.HandleFunc("/logo", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "goingo.jpeg")
+		http.ServeFile(w, r, "main/goingo.jpeg")
 	})
 	http.HandleFunc("/book", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
